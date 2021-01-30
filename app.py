@@ -52,13 +52,61 @@ class Board(Resource):
     def delete(self):
         args = parser.parse_args()
         sql = "DELETE FROM `board` WHERE `id` = %s"
+        cursor.execute(sql, (args["id"]))
+        db.commit()
+        
+        return jsonify(status = "success", result = {"id": args["id"]})
+
+parser.add_argument("id")
+parser.add_argument("title")
+parser.add_argument("content")
+parser.add_argument("board_id")
+
+class BoardArticle(Resource):
+
+    # 글 조회하기
+    def get(self, board_id=None, board_article_id=None):
+        if board_article_id:
+            sql = "SELECT id, title, content FROM `boardArticle` WHERE `id`=%s"
+            cursor.execute(sql, (board_article_id,))
+            result = cursor.fetchone()
+        else:
+            sql = "SELECT id, title, content FROM `boardArticle` WHERE `board_id`=%s"
+            cursor.execute(sql, (board_id,))
+            result = cursor.fetchall()
+            
+        return jsonify(status = "success", result = result)
+
+    # 글 작성하기
+    def post(self, board_id=None):
+        args = parser.parse_args()
+        sql = "INSERT INTO `boardArticle` (`title`, `content`, `board_id`) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (args['title'], args['content'], args['board_id']))
+        db.commit()
+        
+        return jsonify(status = "success", result = {"title": args["title"]})
+        
+    # 글 수정하기
+    def put(self, board_id=None, board_article_id=None):
+        args = parser.parse_args()
+        sql = "UPDATE `boardArticle` SET title = %s, content = %s WHERE `id` = %s"
+        cursor.execute(sql, (args['title'], args["content"], args["id"]))
+        db.commit()
+        
+        return jsonify(status = "success", result = {"title": args["title"], "content": args["content"]})
+        
+    # 글 삭제하기
+    def delete(self, board_id=None, board_article_id=None):
+        args = parser.parse_args()
+        sql = "DELETE FROM `boardArticle` WHERE `id` = %s"
         cursor.execute(sql, (args["id"], ))
         db.commit()
         
         return jsonify(status = "success", result = {"id": args["id"]})
 
-    # API Resource 라우팅을 등록
-    api.add_resource(Board, '/board')
+# API Resource 라우팅을 등록
+api.add_resource(Board, '/board')
+api.add_resource(BoardArticle, '/board/<board_id>','/board/<board_id>/<board_article_id>')
 
 if __name__ == '__main__':
     app.run()
