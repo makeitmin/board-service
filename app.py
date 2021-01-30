@@ -2,6 +2,10 @@ import pymysql
 from flask import Flask, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 
+# Flask api
+app = Flask(__name__)
+api = Api(app)
+
 # mysql 연결하기
 db = pymysql.connect(
         user = 'root',
