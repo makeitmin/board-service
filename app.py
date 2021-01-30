@@ -104,6 +104,16 @@ class BoardArticle(Resource):
         
         return jsonify(status = "success", result = {"id": args["id"]})
 
+class User(Resource):
+
+    def register(self):
+        args = parser.parse_args()
+        sql = "INSERT INTO `user` (`fullname`, `email`, `password`) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (args['fullname'], args['email'], args['password']))
+        db.commit()
+        
+        return jsonify(status = "success", result = {"fullname": args["fullname"]})
+        
 # API Resource 라우팅을 등록
 api.add_resource(Board, '/board')
 api.add_resource(BoardArticle, '/board/<board_id>','/board/<board_id>/<board_article_id>')
