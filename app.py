@@ -104,7 +104,19 @@ class BoardArticle(Resource):
         
         return jsonify(status = "success", result = {"id": args["id"]})
 
+parser.add_argument("id")
+parser.add_argument("fullname")
+parser.add_argument("email")
+parser.add_argument("password")
+
 class User(Resource):
+
+    def login(self):
+        args = parser.parse_args()
+        sql = "SELECT name FROM `user` WHERE `email`=%s AND `password`=%s"
+        cursor.execute(sql, (args['email'], args['password']))
+        result = cursor.fetchone()
+        return jsonify(status = "success", result = result)
 
     def register(self):
         args = parser.parse_args()
@@ -117,6 +129,7 @@ class User(Resource):
 # API Resource 라우팅을 등록
 api.add_resource(Board, '/board')
 api.add_resource(BoardArticle, '/board/<board_id>','/board/<board_id>/<board_article_id>')
+api.add_resource(User, '/user')
 
 if __name__ == '__main__':
     app.run()
