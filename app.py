@@ -104,53 +104,50 @@ class BoardArticle(Resource):
         
         return jsonify(status = "success", result = {"id": args["id"]})
 
+# User APIs
+app.config.from_mapping(SECRET_KEY='dev')
 
+@app.route('/')
+@app.route('/auth/login', methods =['GET', 'POST']) 
+def login(): 
+    if request.method == 'POST': 
+        fullname = request.form['email'] 
+        password = request.form['password'] 
+        sql = "SELECT * FROM `user` WHERE `email`=%s AND `password`=%s"
+        cursor.execute(sql, (email, password, ))
+        result = cursor.fetchone() 
 
-class User(Resource):
+        # 세션값 저장
+        session['login'] = True
+        session['fullname'] = result['fullname']
+        session['email'] = result['email']
 
-    app.config.from_mapping(SECRET_KEY='dev')
+        return render_template('index.html')
 
-    @app.route('/')
-    @app.route('/auth/login', methods =['GET', 'POST']) 
-    def login(): 
-        if request.method == 'POST': 
-            fullname = request.form['email'] 
-            password = request.form['password'] 
-            sql = "SELECT * FROM `user` WHERE `email`=%s AND `password`=%s"
-            cursor.execute(sql, (email, password, ))
-            result = cursor.fetchone() 
+@app.route('/auth/logout')
+def logout():
+    
+    # 세션에서 제거
+    session.pop('login', None)
+    session.pop('fullname', None)
+    session.pop('email', None)
 
-            # 세션값 저장
-            session['login'] = True
-            session['fullname'] = result['fullname']
-            session['email'] = result['email']
+    return redirect(url_for('login'))
 
-            return render_template('index.html')
+@app.route('/auth/register', methods =['GET', 'POST']) 
+def register():
+    if request.method == 'POST':
 
-    @app.route('/auth/logout')
-    def logout():
+        fullname = request.form['fullname']
+        email = request.form['email']
+        password = request.form['password']
         
-        # 세션에서 제거
-        session.pop('login', None)
-        session.pop('fullname', None)
-        session.pop('email', None)
-
-        return redirect(url_for('login'))
-
-    @app.route('/auth/register', methods =['GET', 'POST']) 
-    def register():
-        if request.method == 'POST':
-
-            fullname = request.form['fullname']
-            email = request.form['email']
-            password = request.form['password']
-            
-            sql = "INSERT INTO `user` (`fullname`, `email`, `password`) VALUES (%s, %s, %s)"
-            cursor.execute(sql, (fullname, email, password, ))
-            db.commit()
-        
-        return render_template('register.html')
-        
+        sql = "INSERT INTO `user` (`fullname`, `email`, `password`) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (fullname, email, password, ))
+        db.commit()
+    
+    return render_template('register.html')
+    
 # API Resource 라우팅을 등록
 api.add_resource(Board, '/board')
 api.add_resource(BoardArticle, '/board/<board_id>','/board/<board_id>/<board_article_id>')
