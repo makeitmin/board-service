@@ -1,5 +1,5 @@
 import pymysql
-from flask import Flask, jsonify
+from flask import Flask, jsonify, yrender_template, request, redirect, url_for, session
 from flask_restful import reqparse, abort, Api, Resource
 
 # Flask api
@@ -110,12 +110,22 @@ class User(Resource):
 
     app.config.from_mapping(SECRET_KEY='dev')
 
-    def login(self):
-        args = parser.parse_args()
-        sql = "SELECT name FROM `user` WHERE `email`=%s AND `password`=%s"
-        cursor.execute(sql, (args['email'], args['password']))
-        result = cursor.fetchone()
-        return jsonify(status = "success", result = result)
+    @app.route('/')
+    @app.route('/auth/login', methods =['GET', 'POST']) 
+    def login(): 
+        if request.method == 'POST': 
+            fullname = request.form['email'] 
+            password = request.form['password'] 
+            sql = "SELECT * FROM `user` WHERE `email`=%s AND `password`=%s"
+            cursor.execute(sql, (email, password, ))
+            result = cursor.fetchone() 
+
+            # 세션값 저장
+            session['login'] = True
+            session['fullname'] = result['fullname']
+            session['email'] = result['email']
+
+            return render_template('index.html')
 
     @app.route('/auth/register', methods =['GET', 'POST']) 
     def register():
