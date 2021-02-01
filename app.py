@@ -67,11 +67,11 @@ class BoardArticle(Resource):
     # 글 조회하기
     def get(self, board_id=None, board_article_id=None):
         if board_article_id:
-            sql = "SELECT id, title, content FROM `boardArticle` WHERE `id`=%s"
+            sql = "SELECT `id`, `title`, `content` FROM `boardArticle` WHERE `id`=%s"
             cursor.execute(sql, (board_article_id,))
             result = cursor.fetchone()
         else:
-            sql = "SELECT id, title, content FROM `boardArticle` WHERE `board_id`=%s"
+            sql = "SELECT `id`, `title`, `content` FROM `boardArticle` WHERE `board_id`=%s"
             cursor.execute(sql, (board_id,))
             result = cursor.fetchall()
             
@@ -89,7 +89,7 @@ class BoardArticle(Resource):
     # 글 수정하기
     def put(self, board_id=None, board_article_id=None):
         args = parser.parse_args()
-        sql = "UPDATE `boardArticle` SET title = %s, content = %s WHERE `id` = %s"
+        sql = "UPDATE `boardArticle` SET `title` = %s, `content` = %s WHERE `id` = %s"
         cursor.execute(sql, (args['title'], args["content"], args["id"]))
         db.commit()
         
@@ -126,6 +126,16 @@ class User(Resource):
             session['email'] = result['email']
 
             return render_template('index.html')
+
+    @app.route('/auth/logout')
+    def logout():
+        
+        # 세션에서 제거
+        session.pop('login', None)
+        session.pop('fullname', None)
+        session.pop('email', None)
+
+        return redirect(url_for('login'))
 
     @app.route('/auth/register', methods =['GET', 'POST']) 
     def register():
