@@ -37,12 +37,13 @@ create table if not exists user(...);
 
 ### APIs
 아래 사항은 구현된 API 항목들에 대한 설명입니다.
-| API | 기능 |
-| --- | --- |
+
+| APIs | Features |
+| ------ | ------ |
 | User APIs | 사용자 회원가입/로그인/로그아웃 관리 |
 | Board APIs | 게시판 관리 |
 | BoardArticle APIs | 게시판 내 작성글 관리 |
-| Dashboard APIs | 작성글을 대시보드로 관리 |
+| Dashboard APIs    | 작성글을 대시보드로 관리 |
 
 ## Issues
 - [ ] Internal Error 발생
