@@ -23,6 +23,13 @@ choco install mysql mysql.workbench python --y
 ```
 pip install flask flask-restful pymysql 
 ```
+NySQL Server 또는 MySQL Workbench에서 ```initial_schema.sql```을 통해 필요한 테이블과 레코드를 초기화할 수 있습니다.
+```
+create table if not exists board(..);
+create table if not exists boardArticle(...);
+create table if not exists user(...);
+...
+```
 
 ## Running
 1. ```app.py```를 실행합니다.
@@ -40,4 +47,4 @@ pip install flask flask-restful pymysql
 ## Issues
 - [ ] Internal Error 발생
     ```TypeError: The view function did not return a valid response. The function either returned None or ended without a return statement.```
-- [ ] Board APIs 에서 Read API 실행 시 문자 깨짐 발생
+- [ ] Board APIs 에서 Read API 실행 시 한글 깨짐 발생
