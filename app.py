@@ -104,6 +104,18 @@ class BoardArticle(Resource):
         
         return jsonify(status = "success", result = {"id": args["id"]})
 
+parser.add_argument("num")
+
+class Dashboard(Resource):
+
+    # 각각의 게시판의 가장 최근 n(=5)개의 글의 title을 조회하기
+    def get(self, num=None):
+        sql = "SELECT * FROM ( SELECT *, RANK() OVER (PARTITION BY `board_id` ORDER BY `create_date` DESC) AS `RN` FROM `boardarticle` AS `M` ) AS `topscore` WHERE `topscore`.`RN` <= %s"
+        cursor.execute(sql, (args["num"]))
+        result = cursor.fetchall()
+
+        return jsonify(status = "success", result = result)
+
 # User APIs
 app.config.from_mapping(SECRET_KEY='dev')
 
@@ -151,6 +163,7 @@ def register():
 # API Resource 라우팅을 등록
 api.add_resource(Board, '/board')
 api.add_resource(BoardArticle, '/board/<board_id>','/board/<board_id>/<board_article_id>')
+api.add_resource(Dashboard, '/dashboard')
 
 if __name__ == '__main__':
     app.run()
