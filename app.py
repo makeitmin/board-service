@@ -1,5 +1,5 @@
 import pymysql
-from flask import Flask, jsonify, yrender_template, request, redirect, url_for, session
+from flask import Flask, jsonify, render_template, request, redirect, url_for, session
 from flask_restful import reqparse, abort, Api, Resource
 
 # Flask api
