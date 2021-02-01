@@ -127,6 +127,16 @@ class User(Resource):
 
             return render_template('index.html')
 
+    @app.route('/auth/logout')
+    def logout():
+        
+        # 세션에서 제거
+        session.pop('login', None)
+        session.pop('fullname', None)
+        session.pop('email', None)
+
+        return redirect(url_for('login'))
+
     @app.route('/auth/register', methods =['GET', 'POST']) 
     def register():
         if request.method == 'POST':
