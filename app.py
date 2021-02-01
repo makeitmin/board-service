@@ -104,12 +104,11 @@ class BoardArticle(Resource):
         
         return jsonify(status = "success", result = {"id": args["id"]})
 
-parser.add_argument("id")
-parser.add_argument("fullname")
-parser.add_argument("email")
-parser.add_argument("password")
+
 
 class User(Resource):
+
+    app.config.from_mapping(SECRET_KEY='dev')
 
     def login(self):
         args = parser.parse_args()
@@ -118,18 +117,23 @@ class User(Resource):
         result = cursor.fetchone()
         return jsonify(status = "success", result = result)
 
-    def register(self):
-        args = parser.parse_args()
-        sql = "INSERT INTO `user` (`fullname`, `email`, `password`) VALUES (%s, %s, %s)"
-        cursor.execute(sql, (args['fullname'], args['email'], args['password']))
-        db.commit()
+    @app.route('/auth/register', methods =['GET', 'POST']) 
+    def register():
+        if request.method == 'POST':
+
+            fullname = request.form['fullname']
+            email = request.form['email']
+            password = request.form['password']
+            
+            sql = "INSERT INTO `user` (`fullname`, `email`, `password`) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (fullname, email, password, ))
+            db.commit()
         
-        return jsonify(status = "success", result = {"fullname": args["fullname"]})
+        return render_template('register.html')
         
 # API Resource 라우팅을 등록
 api.add_resource(Board, '/board')
 api.add_resource(BoardArticle, '/board/<board_id>','/board/<board_id>/<board_article_id>')
-api.add_resource(User, '/user')
 
 if __name__ == '__main__':
     app.run()
