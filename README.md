@@ -1,4 +1,4 @@
-# Board Service
+# board-service
 
 다양한 API를 구현하여 게시판 웹 서비스를 제공하는 프로젝트입니다.
 
